@@ -1,13 +1,48 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request
+from data import Users
+import sqlite3
+
+Users = Users()
 app = Flask(__name__)
 
-@app.route('/')
+conn = sqlite3.connect("Users.db")
+c = conn.cursor()
+
+c.execute("CREATE TABLE IF NOT EXISTS users (first_name text NOT NULL,last_name text NOT NULL,email text PRIMARY KEY NOT NULL, password text NOT NULL)")
+c.close()
+conn.close()
+
+@app.route('/',methods=['GET', 'POST'])
 def index():
-   return render_template("signup.html")
+    conn = sqlite3.connect("Users.db")
+    c = conn.cursor()
+    error = None
+    if request.method == 'POST':
+        fname = request.form['first_name']
+        lname = request.form['last_name']
+        email = request.form['email']
+        passw = request.form['password']
+        c.execute("INSERT INTO users VALUES(?,?,?,?)",(fname,lname,email,passw))
+        c.close()
+        conn.close()
+        return render_template('signin.html', error = None)
+    c.close()
+    conn.close()
+    return render_template('signup.html', error = error)
+
+
+@app.route('/users')
+def users():
+    return render_template("users.html",users = Users)
+
+@app.route('/article/<string:id>/')
+def article(id):
+    return render_template("article.html",id = id)
+
 
 @app.route('/signin')
 def signin():
-   return render_template("signin.html")
+    return render_template("signin.html")
 
 if __name__ == '__main__':
    app.run(debug = True)
