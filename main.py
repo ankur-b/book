@@ -1,8 +1,6 @@
 from flask import Flask, render_template,request
-from data import Users
 import sqlite3
 
-Users = Users()
 app = Flask(__name__)
 
 conn = sqlite3.connect("Users.db")
@@ -30,14 +28,6 @@ def index():
     conn.close()
     return render_template('signup.html', error = error)
 
-
-@app.route('/users')
-def users():
-    return render_template("users.html",users = Users)
-
-@app.route('/article/<string:id>/')
-def article(id):
-    return render_template("article.html",id = id)
 
 
 @app.route('/signin')
