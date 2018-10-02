@@ -1,5 +1,8 @@
 from flask import Flask, render_template,request,redirect,url_for,session
 import sqlite3
+import goodreads_api_client as gr
+import goodreads
+
 
 app = Flask(__name__)
 
@@ -30,7 +33,7 @@ def index():
         else:
             c.close()
             conn.close()
-            return render_template('signup.html', error = "Make Sure Your Password and Confirm is Equal")    
+            return render_template('signup.html', error = "Make Sure Your Password and Confirm is Equal")
     c.close()
     conn.close()
     return render_template('signup.html')
@@ -60,6 +63,9 @@ def user():
 def admin():
     return render_template('admin.html',username="admin")
 
+@app.route('/books')
+def books():
+    return reduced_book
 
 if __name__ == '__main__':
    app.run(debug = True)
