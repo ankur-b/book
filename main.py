@@ -3,6 +3,7 @@ import sqlite3
 import goodreads_api_client as gr
 import goodreads
 
+current = ""
 
 app = Flask(__name__)
 
@@ -37,14 +38,14 @@ def index():
             conn.commit()
             c.close()
             conn.close()
-            return render_template('signin.html', error = None)
+            return render_template('signin.html', error = '')
         else:
             c.close()
             conn.close()
             return render_template('signup.html', error = "Make Sure Your Password and Confirm is Equal")
     c.close()
     conn.close()
-    return render_template('signup.html')
+    return render_template('signup.html', error = '')
 
 @app.route('/signin' ,methods=['GET','POST'])
 def signin():
@@ -52,12 +53,12 @@ def signin():
     c = conn.cursor()
     error = None
     if request.method == 'POST':
-        print("hello worldcsxn l;")
         emai = request.form['email']
         passc = request.form['password']
         if emai == "ankur@ankurbarve.me" and passc == "abhi1234":
             return redirect(url_for('admin'))
         else:
+
             return redirect(url_for('user'))
     c.close()
     conn.close()
