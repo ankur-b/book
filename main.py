@@ -25,6 +25,14 @@ def index():
         passw = request.form['password']
         cpass = request.form['cpassword']
         if passw == cpass:
+            t = (email,)
+            c.execute("SELECT * FROM users WHERE email = ?", t)
+            checkEmail = c.fetchone()
+            print (checkEmail)
+            if checkEmail != []:
+                c.close()
+                conn.close()
+                return render_template('signup.html', error = "Email already in use")
             c.execute("INSERT INTO users VALUES(?,?,?,?)",(fname,lname,email,passw))
             conn.commit()
             c.close()
