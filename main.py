@@ -18,7 +18,6 @@ conn.close()
 def index():
     conn = sqlite3.connect("Users.db")
     c = conn.cursor()
-    error = None
     if request.method == 'POST':
         fname = request.form['first_name']
         lname = request.form['last_name']
@@ -27,9 +26,8 @@ def index():
         cpass = request.form['cpassword']
         if passw == cpass:
             t = (email,)
-            c.execute("SELECT * FROM users WHERE email = ?", t)
+            c.execute("SELECT email FROM users WHERE email = ?", t)
             checkEmail = c.fetchone()
-            print (checkEmail)
             if checkEmail != []:
                 c.close()
                 conn.close()
@@ -51,22 +49,36 @@ def index():
 def signin():
     conn = sqlite3.connect("Users.db")
     c = conn.cursor()
-    error = None
     if request.method == 'POST':
         emai = request.form['email']
         passc = request.form['password']
         if emai == "ankur@ankurbarve.me" and passc == "abhi1234":
+            c.close()
+            conn.close()
             return redirect(url_for('admin'))
         else:
-
-            return redirect(url_for('user'))
+            t = (emai,)
+            c.execute("SELECT email, password FROM users WHERE email = ?", t)
+            checkLogin = c.fetchone()
+            print (checkLogin)
+            if checkLogin == None:
+                c.close()
+                conn.close()
+                return render_template('signin.html', error = "Email address doesn't exist. Signup first.")
+            if checkLogin[1] == passc:
+                c.close()
+                conn.close()
+                return redirect(url_for('user'))
+            c.close()
+            conn.close()
+            return render_template('signin.html', error = "Email and password do not match.")
     c.close()
     conn.close()
-    return render_template('signin.html', error = error)
+    return render_template('signin.html', error = '')
 
 @app.route('/user')
 def user():
-    return render_template('user.html',username="allu")
+    return render_template('user.html',username = current)
 
 @app.route('/admin')
 def admin():
