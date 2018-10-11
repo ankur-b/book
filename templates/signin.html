@@ -25,11 +25,19 @@
           <input name="password" placeholder="Password" type="password" class="validate">
         </div>
       </div>
-			<div class="row">
-        <div class="input-field col s12">
-          <button type="submit" name="signup"> Sign In</button>
+		<div class="row">
+          <div class="input-field col s12">
+            <button type="submit" name="signup"> Sign In</button>
+          </div>
         </div>
-      </div>
+		<div class="row">
+  		{% if error != '' %}
+            <p style="color:red;">* {{error}}</a></p>
+  		{% endif %}
+        </div>
+        <div class="row">
+          <p style="text-align: center;">Not a member? <a href="/" style = "font-size: 15px;">Sign Up</a></p>
+        </div>
     </form>
   </div>
 </body>
