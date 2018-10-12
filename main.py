@@ -8,7 +8,7 @@ current = ""
 
 app = Flask(__name__)
 
-app.secret_key = os.urandom(24)
+app.secret_key = '\xf0\xa5\x9ewe6\x82RU\x8b\t\x0b\xb6\xcc\xf8\xb2\xdb"\x02\x83\xab\x0f\x13\x15'
 
 conn = sqlite3.connect("Users.db")
 c = conn.cursor()
@@ -27,24 +27,19 @@ def index():
         email = request.form['email']
         passw = request.form['password']
         cpass = request.form['cpassword']
-        if passw == cpass:
-            t = (email,)
-            c.execute("SELECT email FROM users WHERE email = ?", t)
-            checkEmail = c.fetchone()
-            print (checkEmail)
-            if checkEmail != None:
-                c.close()
-                conn.close()
-                return render_template('signup.html', error = "Email already in use")
-            c.execute("INSERT INTO users VALUES(?,?,?,?)",(fname,lname,email,passw))
-            conn.commit()
+        t = (email,)
+        c.execute("SELECT email FROM users WHERE email = ?", t)
+        checkEmail = c.fetchone()
+        print (checkEmail)
+        if checkEmail != None:
             c.close()
             conn.close()
-            return render_template('signin.html', error = '')
-        else:
-            c.close()
-            conn.close()
-            return render_template('signup.html', error = "Make Sure Your Password and Confirm is Equal")
+            return render_template('signup.html', error = "Email already in use")
+        c.execute("INSERT INTO users VALUES(?,?,?,?)",(fname,lname,email,passw))
+        conn.commit()
+        c.close()
+        conn.close()
+        return redirect(url_for('signin'))
     c.close()
     conn.close()
     if current != '':
@@ -101,4 +96,4 @@ def logout():
     return redirect(url_for('signin'))
 
 if __name__ == '__main__':
-   app.run(debug = True)
+  app.run(debug = True)
