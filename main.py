@@ -3,12 +3,17 @@ import sqlite3
 import goodreads_api_client as gr
 import goodreads
 import os
+import requests
+from xml.etree import ElementTree
+import shutil
 
 current = ""
+adminCh = False
+DevKey = 'UvqPf2fGbH2YoWaetp1bA'
 
 app = Flask(__name__)
 
-app.secret_key = '\xf0\xa5\x9ewe6\x82RU\x8b\t\x0b\xb6\xcc\xf8\xb2\xdb"\x02\x83\xab\x0f\x13\x15'
+app.secret_key = '\xf0\xa5\x9ewe6\x82RU\x8b\t\x0b\xb6\xcc\xf8\xb2\xdb\x02\x83\xab\x0f\x13\x15'
 
 conn = sqlite3.connect("Users.db")
 c = conn.cursor()
@@ -22,6 +27,7 @@ def index():
     conn = sqlite3.connect("Users.db")
     c = conn.cursor()
     if request.method == 'POST':
+      if request.form.get('first_name'):
         fname = request.form['first_name']
         lname = request.form['last_name']
         email = request.form['email']
@@ -40,6 +46,20 @@ def index():
         c.close()
         conn.close()
         return redirect(url_for('signin'))
+      if request.form.get('searchB'):
+        searchB = request.form['searchB']
+        searchB = list(searchB.split())
+        qu = 'https://www.goodreads.com/search/index.xml?key='+DevKey+'&q='
+        for i in searchB:
+            qu = qu + i + "+"
+        qu = qu.rstrip("+")
+        response = requests.get(qu)
+        tree = ElementTree.fromstring(response.content)
+        print (response.content)
+        noBooks = (tree[1][2].text)
+        print (noBooks)
+        if int(noBooks) == 0:
+            return redirect(url_for('noResults'))
     c.close()
     conn.close()
     if current != '':
@@ -56,6 +76,8 @@ def signin():
         if emai == "ankur@ankurbarve.me" and passc == "abhi1234":
             c.close()
             conn.close()
+            global adminCh
+            adminCh = True
             return redirect(url_for('admin'))
         else:
             t = (emai,)
@@ -82,11 +104,19 @@ def signin():
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html',username="admin")
+    global admin
+    if adminCh == True:
+        return render_template('admin.html', username="admin")
+    else:
+        return redirect(url_for('signin'))
 
-@app.route('/books')
-def books():
-    return reduced_book
+@app.route('/results')
+def results():
+    pass
+
+@app.route('/noResults')
+def noResults():
+    return render_template('noResults.html')
 
 @app.route('/logout')
 def logout():
@@ -96,4 +126,4 @@ def logout():
     return redirect(url_for('signin'))
 
 if __name__ == '__main__':
-  app.run(debug = True)
+    app.run(debug = True)
