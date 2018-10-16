@@ -27,39 +27,41 @@ def index():
     conn = sqlite3.connect("Users.db")
     c = conn.cursor()
     if request.method == 'POST':
-      if request.form.get('first_name'):
-        fname = request.form['first_name']
-        lname = request.form['last_name']
-        email = request.form['email']
-        passw = request.form['password']
-        cpass = request.form['cpassword']
-        t = (email,)
-        c.execute("SELECT email FROM users WHERE email = ?", t)
-        checkEmail = c.fetchone()
-        print (checkEmail)
-        if checkEmail != None:
+        if request.form.get('first_name'):
+            fname = request.form['first_name']
+            lname = request.form['last_name']
+            email = request.form['email']
+            passw = request.form['password']
+            cpass = request.form['cpassword']
+            t = (email,)
+            c.execute("SELECT email FROM users WHERE email = ?", t)
+            checkEmail = c.fetchone()
+            print (checkEmail)
+            if checkEmail != None:
+                c.close()
+                conn.close()
+                return render_template('signup.html', error = "Email already in use")
+            c.execute("INSERT INTO users VALUES(?,?,?,?)",(fname,lname,email,passw))
+            conn.commit()
             c.close()
             conn.close()
-            return render_template('signup.html', error = "Email already in use")
-        c.execute("INSERT INTO users VALUES(?,?,?,?)",(fname,lname,email,passw))
-        conn.commit()
-        c.close()
-        conn.close()
-        return redirect(url_for('signin'))
-      if request.form.get('searchB'):
-        searchB = request.form['searchB']
-        searchB = list(searchB.split())
-        qu = 'https://www.goodreads.com/search/index.xml?key='+DevKey+'&q='
-        for i in searchB:
-            qu = qu + i + "+"
-        qu = qu.rstrip("+")
-        response = requests.get(qu)
-        tree = ElementTree.fromstring(response.content)
-        print (response.content)
-        noBooks = (tree[1][2].text)
-        print (noBooks)
-        if int(noBooks) == 0:
-            return redirect(url_for('noResults'))
+            return redirect(url_for('signin'))
+        if request.form.get('searchB'):
+            searchB = request.form['searchB']
+            searchB = list(searchB.split())
+            qu = 'https://www.goodreads.com/search/index.xml?key='+DevKey+'&q='
+            for i in searchB:
+                qu = qu + i + "+"
+            qu = qu.rstrip("+")
+            response = requests.get(qu)
+            tree = ElementTree.fromstring(response.content)
+            print (response.content)
+            noBooks = (tree[1][2].text)
+            print (noBooks)
+            if int(noBooks) == 0:
+                c.close()
+                conn.close()
+                return redirect(url_for('noResults'))
     c.close()
     conn.close()
     if current != '':
@@ -94,10 +96,15 @@ def signin():
                 current = checkLogin[0]
                 session['logged_in'] = True
                 session['username'] = checkLogin[0]
+                print (session['username'])
                 return redirect(url_for('index'))
             c.close()
             conn.close()
             return render_template('signin.html', error = "Email and password do not match.")
+    if current != '':
+        c.close()
+        conn.close()
+        return redirect(url_for('index')) 
     c.close()
     conn.close()
     return render_template('signin.html', error = '')
@@ -121,7 +128,9 @@ def noResults():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    global adminCh
     global current
+    adminCh = False
     current = ''
     return redirect(url_for('signin'))
 
