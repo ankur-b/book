@@ -1,32 +1,35 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Home</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<script type="text/javascript" src="{{ url_for('static', filename='js/materialize.js') }}"></script>
-</head>
-<body>
-
-<div class="sidenav">
-<a class='dropdown-trigger btn' href='#' data-target='dropdown1'>Sort</a>
-  <ul id='dropdown1' class='dropdown-content'>
-    <li><a href="#!">Low to High</a></li>
-    <li><a href="#!">High to Low</a></li>
-    <li><a href="#!">Popularity</a></li>
-    <li><a href="#!">Relavance</a></li>
-    <form method = "POST">
-        <input placeholder="Which book are you searching for" name = "searchB">
-        <button type="submit" name = "searchSubmit">Search</button><br>
-    </form>
-    <a href = '/logout'>Log out</a>
-  </ul>
-</div>
-
-<div class="main">
-  <h2>Hello {{ username }}</h2>
-</div>
-
-</body>
+    <head>
+        <title>Home</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <script type="text/javascript" src="{{ url_for('static', filename='js/materialize.js') }}"></script>
+    </head>
+    <body>
+        <h5>Hello {{ username }}</h5>
+        <a href = '/logout'>Log out</a>
+        <div class="main">
+            <div class="sidenav">
+                <a class='dropdown-trigger btn' href='#' data-target='dropdown1'>Sort</a>
+                <ul id='dropdown1' class='dropdown-content'>
+                    <li><a href="#!">Low to High</a></li>
+                    <li><a href="#!">High to Low</a></li>
+                    <li><a href="#!">Popularity</a></li>
+                    <li><a href="#!">Relavance</a></li>
+                </ul>
+                <div class="row">
+                    <form class = "col s12" method = "POST">
+                        <div class = 'row'>
+                            <div class = 'input-field col s12'>
+                                <input placeholder="Which book are you searching for" name = "searchB">
+                                <button type="submit" name = "searchSubmit">Search</button><br>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
