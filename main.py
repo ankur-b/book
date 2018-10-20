@@ -76,7 +76,8 @@ def index():
                 simgurl = tree[1][6][i][-1][4].text
                 listRes = [title, author, imgurl, simgurl]
                 totList.append(listRes)
-            print (totList)
+            #print (totList)
+            searchB = ' '.join(searchB)
             return redirect(url_for('result', totList = totList, sear = searchB))
     c.close()
     conn.close()
@@ -147,11 +148,13 @@ def admin():
     else:
         return redirect(url_for('signin'))
 
-@app.route('/result', methods = ['POST, GET'])
+@app.route('/result', methods = ['GET'])
 def result():
-    if request.method == 'POST':
+    if request.method == 'GET':
         listRes = request.args['totList']
         sear = request.args['sear']
+        print("*************\n{}\n*******************".format(sear))
+        print(listRes)
         return render_template('searchResults.html', sear = sear, listRes = listRes)
 
 @app.route('/noResults')
