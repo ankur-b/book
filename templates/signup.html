@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>Sign Up</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}">
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -24,7 +25,7 @@
 			}
 		</script>
 	</head>
-	<body onload="disable()" class = "grey lighten-3">
+	<body onload="disable()" class = "grey lighten-3" style = "background-image: url(https://bringmethenews.com/.image/t_share/MTU4MDcyODc4NTczNTYxMzQ4/library-books-.jpg);">
 	  <div class = "card">
   		<div class="row">
     		<form class="col s12" method="POST" action="">
@@ -48,6 +49,13 @@
 						<span class = "helper-text" data-error = "Enter Email Address"></span>
 					</div>
 	  			</div>
+				<div class="row">
+					<div class="input-field col s10 offset-s1">
+						<input name = "username" type="text" class="validate" id = "username" required>
+						<label for = "email">Username</label>
+						<span class = "helper-text" data-error = "Enter Username"></span>
+					</div>
+	  			</div>
       			<div class="row">
         			<div class="input-field col s10 offset-s1">
           				<input name="password" type="password" id = "password" maxlength="20" minlength="8" class="validate" required>
@@ -65,7 +73,7 @@
 					<div class="col s6 offset-s1">
 						Already a Member? <a class="waves-effect waves-teal btn-flat btn-small" href="/signin">Sign In</a>
 					</div>
-					<div class="col s4 offset-s1" onfocus="check()">
+					<div class="col s4 offset-s1" onclick="check()">
           				<button type="submit" class = "btn waves-effect waves-light btn-small" id = 'submit' name="signup" onclick="check()"> Sign Up </button>
         			</div>
       			</div>
@@ -78,6 +86,11 @@
       			</div>
     		</form>
   		</div>
+	  </div>
+	  <div class = 'card panel'>
+		<div class = 'card-text'>
+		  	Made using <a href="https://materializecss.com/">Materialize</a>
+		</div>
 	  </div>
 	</body>
 </html>

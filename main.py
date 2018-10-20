@@ -18,7 +18,7 @@ app.secret_key = '\xf0\xa5\x9ewe6\x82RU\x8b\t\x0b\xb6\xcc\xf8\xb2\xdb\x02\x83\xa
 conn = sqlite3.connect("Users.db")
 c = conn.cursor()
 
-c.execute("CREATE TABLE IF NOT EXISTS users (first_name text NOT NULL,last_name text NOT NULL,email text PRIMARY KEY NOT NULL, password text NOT NULL)")
+c.execute("CREATE TABLE IF NOT EXISTS users (first_name text NOT NULL,last_name text NOT NULL,email text PRIMARY KEY NOT NULL, password text NOT NULL, username text NOT NULL)")
 c.close()
 conn.close()
 
@@ -33,15 +33,22 @@ def index():
             email = request.form['email']
             passw = request.form['password']
             cpass = request.form['cpassword']
-            t = (email,)
+            uname = request.form['username']
+            t = (email.lower(),)
             c.execute("SELECT email FROM users WHERE email = ?", t)
             checkEmail = c.fetchone()
-            print (checkEmail)
             if checkEmail != None:
                 c.close()
                 conn.close()
                 return render_template('signup.html', error = "Email already in use")
-            c.execute("INSERT INTO users VALUES(?,?,?,?)",(fname,lname,email,passw))
+            t = (uname.lower(),)
+            c.execute("SELECT username FROM users WHERE username = ?", t)
+            checkUser = c.fetchone()
+            if checkUser != None:
+                c.close()
+                conn.close()
+                return render_template('signup.html', error = "Username already in use")
+            c.execute("INSERT INTO users VALUES(?,?,?,?,?)",(fname,lname,email,passw,uname))
             conn.commit()
             c.close()
             conn.close()
@@ -55,13 +62,23 @@ def index():
             qu = qu.rstrip("+")
             response = requests.get(qu)
             tree = ElementTree.fromstring(response.content)
-            print (response.content)
             noBooks = (tree[1][2].text)
             print (noBooks)
             if int(noBooks) == 0:
                 c.close()
                 conn.close()
                 return redirect(url_for('noResults'))
+            totList = []
+            for i in range(int(noBooks)):
+                title = tree[1][6][i][-1][1].text
+                author = tree[1][6][i][-1][2][1].text
+                imgurl = tree[1][6][i][-1][3].text
+                simgurl = tree[1][6][i][-1][4].text
+                listRes = [title, author, imgurl, simgurl]
+                totList.append(listRes)
+            #print (totList)
+            searchB = ' '.join(searchB)
+            return redirect(url_for('result', totList = totList, sear = searchB))
     c.close()
     conn.close()
     if current != '':
@@ -72,6 +89,7 @@ def index():
 def signin():
     conn = sqlite3.connect("Users.db")
     c = conn.cursor()
+    global current
     if request.method == 'POST':
         emai = request.form['email']
         passc = request.form['password']
@@ -82,18 +100,31 @@ def signin():
             adminCh = True
             return redirect(url_for('admin'))
         else:
-            t = (emai,)
-            c.execute("SELECT email, password FROM users WHERE email = ?", t)
+            t = (emai.lower(),)
+            c.execute("SELECT email, username, password FROM users WHERE email = ?",t)
             checkLogin = c.fetchone()
             if checkLogin == None:
+                c.execute("SELECT email, username, password FROM users WHERE lower(username) = ?",t)
+                checkLogin = c.fetchone()
+                if checkLogin != None:
+                    if checkLogin[2] == passc:
+                        c.close()
+                        conn.close()
+                        current = checkLogin[1]
+                        session['logged_in'] = True
+                        session['username'] = checkLogin[0]
+                        return redirect(url_for('index'))
+                    else:
+                        c.close()
+                        conn.close()
+                        return render_template('signin.html', error = "Username and password do not match.")
                 c.close()
                 conn.close()
-                return render_template('signin.html', error = "Email address doesn't exist. Signup first.")
-            if checkLogin[1] == passc:
+                return render_template('signin.html', error = "Username or Email address doesn't exist. Signup first.")
+            if checkLogin[2] == passc:
                 c.close()
                 conn.close()
-                global current
-                current = checkLogin[0]
+                current = checkLogin[1]
                 session['logged_in'] = True
                 session['username'] = checkLogin[0]
                 print (session['username'])
@@ -104,7 +135,7 @@ def signin():
     if current != '':
         c.close()
         conn.close()
-        return redirect(url_for('index')) 
+        return redirect(url_for('index'))
     c.close()
     conn.close()
     return render_template('signin.html', error = '')
@@ -117,9 +148,14 @@ def admin():
     else:
         return redirect(url_for('signin'))
 
-@app.route('/results')
-def results():
-    pass
+@app.route('/result', methods = ['GET'])
+def result():
+    if request.method == 'GET':
+        listRes = request.args['totList']
+        sear = request.args['sear']
+        print("*************\n{}\n*******************".format(sear))
+        print(listRes)
+        return render_template('searchResults.html', sear = sear, listRes = listRes)
 
 @app.route('/noResults')
 def noResults():
@@ -128,6 +164,7 @@ def noResults():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    session['logged_in'] = False
     global adminCh
     global current
     adminCh = False

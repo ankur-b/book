@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
 		<title>Sign In</title>
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}">
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 		<script type="text/javascript" src="{{ url_for('static', filename='js/materialize.js') }}"></script>
 	</head>
-	<body class = "grey lighten-3">
+	<body class = "grey lighten-3" style = "background-image: url(https://bringmethenews.com/.image/t_share/MTU4MDcyODc4NTczNTYxMzQ4/library-books-.jpg);" >
 	  <div class = "card">
 		<div class="row">
     		<form class="col s12" action="" method="POST">
     			<h3 class = "center-align cyan-text text-darken-2">Sign In</h3>
       			<div class="row">
         			<div class="input-field col s10 offset-s1">
-          				<input name="email" type="email" class="validate" id = "email" required>
+          				<input name="email" type="text" class="validate" id = "email" required>
 		  				<label for="email">E-Mail</label>
 						<span class = "helper-text" data-error = "Enter Email"></span>
 					</div>
@@ -43,7 +44,11 @@
 					{% endif %}
         		</div>
     		</form>
-  		</div>
+  		  </div>
+	    </div>
+      </div>
+	  <div class = 'card-panel'>
+	  	  Made using <a href="https://materializecss.com/">Materialize</a>
 	  </div>
-	</body>
+    </body>
 </html>
