@@ -68,16 +68,21 @@ def index():
                 c.close()
                 conn.close()
                 return redirect(url_for('noResults'))
-            totList = []
+            totList = {}
             for i in range(int(noBooks)):
                 title = tree[1][6][i][-1][1].text
                 author = tree[1][6][i][-1][2][1].text
                 imgurl = tree[1][6][i][-1][3].text
                 simgurl = tree[1][6][i][-1][4].text
-                listRes = [title, author, imgurl, simgurl]
-                totList.append(listRes)
-            #print (totList)
+                dict = {}
+                dict['title'] = title
+                dict['author'] = author
+                dict['imgurl'] = imgurl
+                dict['simgurl'] = simgurl
+                totList[i] = dict
+            print (totList)
             searchB = ' '.join(searchB)
+            session['listRes'] = totList
             return redirect(url_for('result', totList = totList, sear = searchB))
     c.close()
     conn.close()
@@ -151,9 +156,9 @@ def admin():
 @app.route('/result', methods = ['GET'])
 def result():
     if request.method == 'GET':
-        listRes = request.args['totList']
+        listRes = session['listRes']
         sear = request.args['sear']
-        print("*************\n{}\n*******************".format(sear))
+        print(type(listRes))
         print(listRes)
         return render_template('searchResults.html', sear = sear, listRes = listRes)
 

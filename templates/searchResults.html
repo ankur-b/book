@@ -8,12 +8,13 @@
     </head>
     <body>
         <h3>Search results for {{sear}}</h3>
-        <ul>
-            {% for l in listRes %}
-                {% for res in l %}
-                    <li>{{res}}</li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
+        <dl>
+          {% for key, value in listRes.items() %}
+            <dt>{{ key }}</dt>
+            <dd>{{ value['imgurl'] }}</dd>
+            <img src="{{ value['imgurl'] }}">
+            <img src="{{ value['simgurl'] }}">
+          {% endfor %}
+        </dl>
     </body>
 </html>
