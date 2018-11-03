@@ -1,7 +1,6 @@
 from flask import Flask, render_template,request,redirect,url_for,session
 import sqlite3
 import goodreads_api_client as gr
-import goodreads
 import os
 import requests
 from xml.etree import ElementTree
@@ -10,6 +9,7 @@ import shutil
 current = ""
 adminCh = False
 DevKey = 'UvqPf2fGbH2YoWaetp1bA'
+client = gr.Client(developer_key = DevKey)
 
 app = Flask(__name__)
 
@@ -63,13 +63,13 @@ def index():
             response = requests.get(qu)
             tree = ElementTree.fromstring(response.content)
             noBooks = (tree[1][2].text)
-            print (noBooks)
             if int(noBooks) == 0:
                 c.close()
                 conn.close()
                 return redirect(url_for('noResults'))
             totList = {}
             for i in range(int(noBooks)):
+                id = str(tree[1][6][i][-0].text)
                 title = tree[1][6][i][-1][1].text
                 author = tree[1][6][i][-1][2][1].text
                 imgurl = tree[1][6][i][-1][3].text
@@ -80,7 +80,6 @@ def index():
                 dict['imgurl'] = imgurl
                 dict['simgurl'] = simgurl
                 totList[i] = dict
-            print (totList)
             searchB = ' '.join(searchB)
             session['listRes'] = totList
             return redirect(url_for('result', totList = totList, sear = searchB))
@@ -132,7 +131,6 @@ def signin():
                 current = checkLogin[1]
                 session['logged_in'] = True
                 session['username'] = checkLogin[0]
-                print (session['username'])
                 return redirect(url_for('index'))
             c.close()
             conn.close()
@@ -158,9 +156,7 @@ def result():
     if request.method == 'GET':
         listRes = session['listRes']
         sear = request.args['sear']
-        print(type(listRes))
-        print(listRes)
-        return render_template('searchResults.html', sear = sear, listRes = listRes)
+        return render_template('searchResults.html', sear = sear, listRes = listRes, username = current)
 
 @app.route('/noResults')
 def noResults():
