@@ -7,14 +7,26 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/materialize.js') }}"></script>
     </head>
     <body>
-        <h3>Search results for {{sear}}</h3>
-        <dl>
-          {% for key, value in listRes.items() %}
-            <dt>{{ key }}</dt>
-            <dd>{{ value['imgurl'] }}</dd>
-            <img src="{{ value['imgurl'] }}">
-            <img src="{{ value['simgurl'] }}">
-          {% endfor %}
-        </dl>
+      <div class="row container">
+        <h1>Books</h1>
+     <div class="col s12">
+       {% for key, value in listRes.items() %}
+       <div class="card">
+         <div class="card-image waves-effect waves-block waves-light">
+           <img class="activator" style="width:200px" src="{{value['imgurl']}}">
+         </div>
+         <div class="card-content">
+           <span class="card-title activator grey-text text-darken-4">{{value['title']}}</span>
+         </div>
+         <div class="card-reveal">
+           <span class="card-title grey-text text-darken-4">Card Title<i class="material-icons right">close</i></span>
+           <p>Here is some more information about this product that is only revealed once clicked on.</p>
+         </div>
+       </div>
+{% endfor %}
+
+     </div>
+   </div>
+
     </body>
 </html>
